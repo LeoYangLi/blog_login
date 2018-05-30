@@ -2,8 +2,9 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from .forms import LoginForm
+from .forms import LoginForm, RegisterForm
 from .models import User
+from werkzeug.security import generate_password_hash
 
 @lm.user_loader
 def load_user(id):
@@ -33,7 +34,7 @@ def after_login(resp):
     login_user(user, remember=remember_me)  # flask_login的函数，登录使用
     return redirect(url_for('index'))
 
-@app.route('/')
+
 @app.route('/index')
 @login_required  # 确保了这页面只被已经登录的用户看到
 def index():
@@ -50,7 +51,7 @@ def index():
     ]
     return render_template('index.html',title = '',user = user,posts = posts)
 
-
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -81,3 +82,21 @@ def user(nickname):
         return render_template('user.html', user=user, posts=posts)
     flash('User ' + nickname + ' not found.')
     return redirect(url_for('index'))
+
+@app.route('/file')
+@login_required
+def download_file():
+    Column_list = ['id', 'name', 'password_hash', 'email']
+    filename = BulidNewExcel(Column_list)
+
+@app.route('/register', methods=['GET','POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        password_hash = generate_password_hash(form.password.data)
+        user = User(name=form.user.data, password_hash=password_hash, email=form.email.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('注册成功')
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
