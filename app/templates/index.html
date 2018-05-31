@@ -5,7 +5,7 @@
 {% for post in posts %}
 <div><p>{{post.author.name}} says: <b>{{post.body}}</b></p></div>
 {% endfor %}
-<form method="get" action="/logout">
+<form method="get" action="/auth/logout">
     <button type="submit">logout</button>
 </form>
 {% endblock %}

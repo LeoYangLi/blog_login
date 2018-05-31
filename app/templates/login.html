@@ -6,7 +6,7 @@
     <h1>Sign In</h1>
     <div class="col-md-4">
         {{ wtf.quick_form(form) }}
-        <a href="/register" class="button">注册</a>
+        <a href="/auth/register" class="button">注册</a>
     </div>
     <div class="container">
         {% for message in get_flashed_messages() %}
